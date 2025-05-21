@@ -1,0 +1,44 @@
+# Directory structure for the modularized Selenium-based POI validator
+
+project_root/
+├── core/
+│   ├── __init__.py
+│   ├── main.py              # Entry point
+│   ├── runner.py            # Orchestrates flow: load config, scrape, validate, output
+│   └── state_manager.py     # Manages versioning, history, run state
+│
+├── io/
+│   ├── __init__.py
+│   ├── config_loader.py     # Parses input config CSV
+│   ├── output_writer.py     # Writes result CSVs and logs
+│   └── db_writer.py         # Optional: push to internal database (stub for now)
+│
+├── scraper/
+│   ├── __init__.py
+│   ├── browser.py           # Starts driver, handles session/login
+│   ├── navigation.py        # Navigates dashboard, ticket tabs
+│   ├── extractors.py        # Pulls POI and ToDo data from page
+│   ├── selectors.py         # Central reference for all CSS/XPath selectors
+│   └── actions.py           # For submit/comment/button actions (unused in dry run)
+│
+├── validator/
+│   ├── __init__.py
+│   ├── ticket_checks.py     # todo_check, edits_check, etc.
+│   ├── field_checks.py      # name, phone, hours comparison logic
+│   ├── normalizer.py        # hours formatting, phone cleanup
+│   └── fuzzy_utils.py       # Wraps RapidFuzz or FuzzyWuzzy
+│
+├── utils/
+│   ├── __init__.py
+│   ├── formatting.py        # Log alignment, string helpers
+│   ├── exceptions.py        # Custom error types
+│   ├── timing.py            # Execution timing, sleep helpers
+│   └── settings.py          # Config flags, thresholds, selectors
+│
+├── tests/
+│   └── test_sample.py       # Unit tests and integration tests
+│
+├── config.csv               # Input file for non-technical users
+├── results.csv              # Output written by script
+├── README.md                # Usage and setup instructions
+└── requirements.txt         # pip dependencies
