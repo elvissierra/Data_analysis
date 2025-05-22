@@ -24,7 +24,6 @@ def open_automation_todo(id, driver):
     time.sleep(40)
 
 def get_name_suggestion(driver):
-    """
     row = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//tr[@class='base-edit-correction']"))
         )
@@ -50,17 +49,19 @@ def get_address_suggestion(driver):
     address = address_element.find_element(By.XPATH, ".//span").text
     cleaned_address = address.strip()
     return cleaned_address
-"""
 
 # Elvis
 def get_phone_in_poi(driver):
     """ Scrape phone number from the POI section of the web page using driver """
-    row = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//tr[@class='base-edit-correction']"))
-    )        
-    data_copyable = row.find_element(By.XPATH, ".//div[@data-copyable]")
-    phone_poi = data_copyable.find_element(By.XPATH, ".//span").text    
-    return phone_poi
+    phone_xpath = (
+        "//div[@title='Number']"
+        "/following-sibling::div"         # col-value container
+        "//div[@data-copyable]"           # the actual number holder
+    )
+    elem = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, phone_xpath))
+    )
+    return elem.text.strip().strip('"')
 
 def get_phone_suggestion(driver):
     # TODO (Elvis): Scrape suggested phone number from the web page using driver
@@ -73,11 +74,6 @@ def get_url_in_poi(driver):
 def get_url_suggestion(driver):
     # TODO (Elvis): Scrape suggested URL from the web page using driver
     pass
-
-
-
-
-
 
 
 # William
