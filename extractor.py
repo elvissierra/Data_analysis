@@ -24,22 +24,15 @@ def open_automation_todo(id, driver):
     time.sleep(40)
 
 def get_name_suggestion(driver):
-    """
     row = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//tr[@class='base-edit-correction']"))
         )
-        
-    # Find the div with the 'data-copyable' attribute inside this row
     data_copyable = row.find_element(By.XPATH, ".//div[@data-copyable]")
-
-    # Get the text inside the <span> within the data-copyable div
-    already_correct_suggestion = data_copyable.find_element(By.XPATH, ".//span").text
-    
+    already_correct_suggestion = data_copyable.find_element(By.XPATH, ".//span").text    
     cleaned_suggestion = already_correct_suggestion.strip() 
     return cleaned_suggestion
 
 def write_suggestions_to_csv(id, name, file_path=output):
-    # Create a DataFrame with one row, suggestion in second column
     df = pd.DataFrame([[id, name]])
     df.to_csv(file_path, mode='a', header=False, index=False)
     
@@ -50,17 +43,21 @@ def get_address_suggestion(driver):
     address = address_element.find_element(By.XPATH, ".//span").text
     cleaned_address = address.strip()
     return cleaned_address
-"""
 
-# Elvis
 def get_phone_in_poi(driver):
-    """ Scrape phone number from the POI section of the web page using driver """
-    row = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//tr[@class='base-edit-correction']"))
-    )        
-    data_copyable = row.find_element(By.XPATH, ".//div[@data-copyable]")
-    phone_poi = data_copyable.find_element(By.XPATH, ".//span").text    
-    return phone_poi
+    """ Scraped phone number from the POI """
+    phone_element = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((
+            By.XPATH, "//div[@title='Number']"
+        ))
+    )
+    copyable = phone_element.find_element(By.XPATH, "following-sibling::div//div[@data-copyable]")
+    return copyable.text.strip()
+
+def write_phone_to_csv(id, phone, file_path=output):
+    """ Write the phone number to a CSV file """
+    df = pd.DataFrame([[id, phone]])
+    df.to_csv(file_path, mode='a', header=False, index=False)
 
 def get_phone_suggestion(driver):
     # TODO (Elvis): Scrape suggested phone number from the web page using driver
@@ -75,8 +72,42 @@ def get_url_suggestion(driver):
     pass
 
 
+def main():
+    driver = setup_driver()
+    
+    df = pd.read_csv('data.csv')
+    df.columns = df.columns.str.strip()
+    
+    for x in range(len(df)):
+        id = df['Ticket ID'].iloc[x]
+        if "automation" in id:
+            print(f"Automation found in: {id}")
+            open_automation_todo(id, driver)
+            name_suggestion = get_name_suggestion(driver)
+            print(id, name_suggestion)
+            write_suggestions_to_csv(id, name_suggestion)
+            address = get_address_suggestion(driver)
+            print(address)
+            phone_suggestion = get_phone_in_poi(driver)
+            print(phone_suggestion)
+            write_phone_to_csv(id, phone_suggestion)
+        else:
+            print(f"No automation in: {id}")
+            open_kitty_hawk_todo(id, driver)
+            name_suggestion = get_name_suggestion(driver)
+            print(name_suggestion)
+            write_suggestions_to_csv(id, name_suggestion)
+            address = get_address_suggestion(driver)
+            print(address)
+
+    driver.quit()
 
 
+if __name__ == '__main__':
+    main()
+
+
+"""
 
 
 
@@ -100,6 +131,7 @@ def get_country_code(driver):
 def get_geocode_in_poi(driver):
     # TODO (William): Scrape geocode from the POI section of the web page using driver
     pass
+
 
 
 # Alex
@@ -128,35 +160,4 @@ def get_name_in_poi(driver):
     pass
 
 
-
-
-def main():
-    driver = setup_driver()
-    
-    df = pd.read_csv('data.csv')
-    df.columns = df.columns.str.strip()  # 🧼 Clean up column names
-    
-    for x in range(len(df)):
-        id = df['Ticket ID'].iloc[x]
-        if "automation" in id:
-            print(f"Automation found in: {id}")
-            open_automation_todo(id, driver)
-            #name_suggestion = get_name_suggestion(driver)
-            #print(id, name_suggestion)
-            #write_suggestions_to_csv(id, name_suggestion)
-            #address = get_address_suggestion(driver)
-            #print(address)
-        else:
-            print(f"No automation in: {id}")
-            open_kitty_hawk_todo(id, driver)
-            name_suggestion = get_name_suggestion(driver)
-            print(name_suggestion)
-            #write_suggestions_to_csv(id, name_suggestion)
-            #address = get_address_suggestion(driver)
-            #print(address)
-
-    driver.quit()
-
-
-if __name__ == '__main__':
-    main()
+"""
