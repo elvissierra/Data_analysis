@@ -32,8 +32,8 @@ def get_name_suggestion(driver):
     cleaned_suggestion = already_correct_suggestion.strip() 
     return cleaned_suggestion
 
-def write_suggestions_to_csv(id, name, file_path=output):
-    df = pd.DataFrame([[id, name]])
+def write_suggestions_to_csv(id, name, address, phone, file_path=output):
+    df = pd.DataFrame([[id, name, address, phone]])
     df.to_csv(file_path, mode='a', header=False, index=False)
     
 def get_address_suggestion(driver):
@@ -54,11 +54,6 @@ def get_phone_in_poi(driver):
     copyable = phone_element.find_element(By.XPATH, "following-sibling::div//div[@data-copyable]")
     return copyable.text.strip()
 
-def write_phone_to_csv(id, phone, file_path=output):
-    """ Write the phone number to a CSV file """
-    df = pd.DataFrame([[id, phone]])
-    df.to_csv(file_path, mode='a', header=False, index=False)
-
 def get_phone_suggestion(driver):
     # TODO (Elvis): Scrape suggested phone number from the web page using driver
     pass
@@ -74,7 +69,6 @@ def get_url_suggestion(driver):
 
 def main():
     driver = setup_driver()
-    
     df = pd.read_csv('data.csv')
     df.columns = df.columns.str.strip()
     
@@ -84,21 +78,19 @@ def main():
             print(f"Automation found in: {id}")
             open_automation_todo(id, driver)
             name_suggestion = get_name_suggestion(driver)
-            print(id, name_suggestion)
-            write_suggestions_to_csv(id, name_suggestion)
             address = get_address_suggestion(driver)
-            print(address)
             phone_suggestion = get_phone_in_poi(driver)
-            print(phone_suggestion)
-            write_phone_to_csv(id, phone_suggestion)
+            write_suggestions_to_csv(id, address, name_suggestion, phone_suggestion)
+            print (id, phone_suggestion, name_suggestion, address)
+
         else:
             print(f"No automation in: {id}")
             open_kitty_hawk_todo(id, driver)
             name_suggestion = get_name_suggestion(driver)
-            print(name_suggestion)
-            write_suggestions_to_csv(id, name_suggestion)
             address = get_address_suggestion(driver)
-            print(address)
+            phone_suggestion = get_phone_in_poi(driver)
+            write_suggestions_to_csv(id, address, name_suggestion, phone_suggestion)
+            print (id, phone_suggestion, name_suggestion, address)
 
     driver.quit()
 
