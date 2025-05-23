@@ -8,14 +8,14 @@ def scrape(driver, requested_fields):
     print("REQUESTED FIELDS IN GEM TAB", requested_fields)
 
     if "Corrections col - Address - Raw Address" in requested_fields:
-        result["Corrections col - Address - Raw Address"] = get_formatted_address(driver)
+        result["Corrections col - Address - Raw Address"] = get_formatted_address(
+            driver
+        )
     if "Carto Score" in requested_fields:
         result["Carto Score"] = get_carto_score(driver)
     print("SHOULD SEE THIS NO MATTER WHAT", result)
 
-
     return result
-
 
 
 """ ===Field Scraping Logic=== 
@@ -36,12 +36,13 @@ def get_field_x(driver):
 """
 
 
-
 def get_formatted_address(driver):
     try:
-        
+
         element = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-qa='address-formatted']"))
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "[data-qa='address-formatted']")
+            )
         )
         return element.text.strip()
     except Exception as e:
@@ -49,28 +50,24 @@ def get_formatted_address(driver):
         return ""
 
 
-
-
 from time import sleep
+
 
 def get_carto_score(driver):
     try:
         print("Finding render sweetspot...")
-        sleep(15)  
+        sleep(15)
         print("done waiting.")
 
-     
         value_div = driver.find_element(
-            By.CSS_SELECTOR,
-            'div[title="Carto Score"] + div.col-value'
+            By.CSS_SELECTOR, 'div[title="Carto Score"] + div.col-value'
         )
-
 
         print("Attempting to find <span> inside value div...")
         span_elem = value_div.find_element(By.CSS_SELECTOR, "span")
-        js_text = driver.execute_script("return arguments[0].textContent;", span_elem).strip()
-
-  
+        js_text = driver.execute_script(
+            "return arguments[0].textContent;", span_elem
+        ).strip()
 
         # Prefer JS-based textContent to bypass Vue weirdness
         return js_text if js_text else "Empty Carto Score (CSS)"
@@ -78,6 +75,7 @@ def get_carto_score(driver):
     except Exception as e:
         print("❌ STEP X: Exception during Carto Score scrape")
         import traceback
+
         traceback.print_exc()
         return "Unable to find Carto Score"
 
@@ -108,9 +106,6 @@ def get_carto_score(driver):
 """
 
 
-
-
-
 def get_muid(driver):
     try:
         element = WebDriverWait(driver, 10).until(
@@ -125,7 +120,9 @@ def get_muid(driver):
 def get_created_timestamp(driver):
     try:
         element = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-qa='created-timestamp']"))
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "[data-qa='created-timestamp']")
+            )
         )
         return element.text.strip()
     except Exception as e:

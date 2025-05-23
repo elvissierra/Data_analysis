@@ -16,7 +16,7 @@ def scrape_data(driver, row, tab_field_map):
     results = {
         "MUIDs": row.get("MUIDs", ""),
         "Ticket IDs": row.get("Ticket IDs", ""),
-        "Place IDs": row.get("Place IDs", "")
+        "Place IDs": row.get("Place IDs", ""),
     }
 
     if row.get("Ticket IDs"):
@@ -35,7 +35,9 @@ def scrape_data(driver, row, tab_field_map):
         muid = str(row.get("MUIDs") or row.get("Place IDs")).strip()
         driver.get(BASE_POI_URL + muid)
 
-        results.update(scrape_poi_main(driver, muid, tab_field_map))  # tab_field_map includes other tabs like Gemini, Versions, etc. if multiple tabs/columns in csv were selected
+        results.update(
+            scrape_poi_main(driver, muid, tab_field_map)
+        )  # tab_field_map includes other tabs like Gemini, Versions, etc. if multiple tabs/columns in csv were selected
 
     else:
         results["Validation Notes"] = "No valid identifier provided"

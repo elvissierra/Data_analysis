@@ -1,5 +1,6 @@
 from selenium import webdriver
 
+
 def start_driver():
     print("Launching Safari browser...")
 

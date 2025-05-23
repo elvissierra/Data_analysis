@@ -10,10 +10,19 @@ def load_config(filepath):
         df.columns = [str(col).strip() for col in df.columns]
 
         # Normalize column names for ID detection
-        active_id_col = next((col for col in id_columns if col in df.columns and df[col].str.strip().any()), None)
+        active_id_col = next(
+            (
+                col
+                for col in id_columns
+                if col in df.columns and df[col].str.strip().any()
+            ),
+            None,
+        )
 
         if not active_id_col:
-            print(f"Failed to load config: no populated ID column found among {id_columns}")
+            print(
+                f"Failed to load config: no populated ID column found among {id_columns}"
+            )
             return [], None, df
 
         # Get IDs only — do NOT filter the whole DataFrame
@@ -25,7 +34,8 @@ def load_config(filepath):
     except Exception as e:
         print(f"Failed to load config: {e}")
         return [], None, pd.DataFrame()
-    
+
+
 def parse_tab_blocks(df):
     """
     Parses vertical tab blocks from the config csv:
@@ -58,8 +68,7 @@ def parse_tab_blocks(df):
                     tab_field_map[tab_name].append(attribute)
 
         col_index += 3  # skips to the next 3-column block
-    print("THIS IS TAB FIELD MAP", tab_field_map) 
-
+    print("THIS IS TAB FIELD MAP", tab_field_map)
 
     return tab_field_map
 
@@ -79,11 +88,10 @@ def is_ticket_id_request(row):
             print("CHECKBOX COL:", columns[i + 1])
             print("CHECKBOX VALUE:", row.get(columns[i + 1]))
             return val in ["true", "1", "x", "✓"]
-    
+
     print("HEADER:", columns[i])
     print("CHECKBOX COL:", columns[i + 1])
     print("CHECKBOX VALUE:", row.get(columns[i + 1]))
-
 
     return False
 
@@ -99,7 +107,7 @@ def get_required_tabs_from_row(row):
         "RAPs tab": "RAPs",
         "Edits tab": "Edits",
         "Todos Tab": "Todos",
-        "ToDo ticket page": "Ticket"  # not a tab but special handler
+        "ToDo ticket page": "Ticket",  # not a tab but special handler
     }
 
     required_tabs = set()
@@ -123,12 +131,3 @@ def get_required_tabs_from_row(row):
         col_index += 3
 
     return list(required_tabs)
-
-
-
-
-
-
-
-
-

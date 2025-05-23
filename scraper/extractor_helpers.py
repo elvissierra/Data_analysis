@@ -4,10 +4,18 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 from input_output.config_loader import get_required_tabs_from_row
 from scraper.tab_nav import click_tab
-from scraper.tab_ticket_scrapers import edits_tab, gemini_tab, raps_tab, ticket_page, todos_tab, versions_tab 
+from scraper.tab_ticket_scrapers import (
+    edits_tab,
+    gemini_tab,
+    raps_tab,
+    ticket_page,
+    todos_tab,
+    versions_tab,
+)
 
 
-#Stores attributes that were checked off on csv file. 
+# Stores attributes that were checked off on csv file.
+
 
 def get_requested_fields_for_tab(row, tab):
     """
@@ -18,7 +26,7 @@ def get_requested_fields_for_tab(row, tab):
         "Versions": "Versions tab",
         "Todos": "Todos tab",
         "RAPs": "RAPs tab",
-        "Edits": "Edits tab"
+        "Edits": "Edits tab",
     }
 
     header = TAB_TO_HEADER.get(tab)
@@ -33,14 +41,14 @@ def get_requested_fields_for_tab(row, tab):
             checkbox_col = columns[i + 1]
             field_label = str(row.get(columns[i], "")).strip()
             checkbox_value = str(row.get(checkbox_col, "")).strip().lower()
-            #Checks to see how quip/numbers/wherever the csv came from defines the value of a checkmark box. Once confirmed, appends checkmarked fields to attribute list
+            # Checks to see how quip/numbers/wherever the csv came from defines the value of a checkmark box. Once confirmed, appends checkmarked fields to attribute list
             if checkbox_value in ["✓", "x", "true", "1"] and field_label:
                 fields.append(field_label)
 
     return fields
 
 
-#Stores attributes that were checked off on csv file, but only for the ToDo ticket page column
+# Stores attributes that were checked off on csv file, but only for the ToDo ticket page column
 def get_requested_fields_for_ticket_page(row):
     """
     Returns a list of fields requested under the 'ToDo ticket page' block.
@@ -59,7 +67,6 @@ def get_requested_fields_for_ticket_page(row):
                 fields.append(field_label)
 
     return fields
-
 
 
 def scrape_poi_main(driver, muid, tab_field_map):
@@ -92,7 +99,6 @@ def scrape_poi_main(driver, muid, tab_field_map):
     return results
 
 
-
 def scrape_ticket_page(driver, ticket_id, requested_fields):
     """
     Scrapes the standalone Ticket page.
@@ -101,6 +107,3 @@ def scrape_ticket_page(driver, ticket_id, requested_fields):
     if requested_fields:
         return ticket_page.scrape(driver, requested_fields)
     return {}
-
-
-

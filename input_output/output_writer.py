@@ -48,6 +48,7 @@ I'm underestimating the complexity here. Below will just fill a blank CSV -AH
 
 import csv
 
+
 def write_results(filepath, data):
     if not data:
         print("No data to write.")

@@ -7,10 +7,12 @@ def scrape(driver, requested_fields):
     result = {}
 
     if "Corrections col - Address - Raw Address" in requested_fields:
-        result["Corrections col - Address - Raw Address"] = get_address_corrections_col(driver)
-
+        result["Corrections col - Address - Raw Address"] = get_address_corrections_col(
+            driver
+        )
 
     return result
+
 
 """ ===Field Scraping Logic=== 
 
