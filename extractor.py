@@ -2,154 +2,209 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 
 import time
 import pandas as pd
 import csv
+import os
 
 BASE_ADDRESS_KITTY_HAWK = "https://apollo.geo.apple.com/tickets/kittyhawk-sig/"
 TODOS = "/todos"
-output = 'output.csv'
+output = "output.csv"
+TIMEOUT = 30
 
 def setup_driver():
     driver = webdriver.Safari()
     return driver
 
-def open_kitty_hawk_todo(id, driver):
-    driver.get(BASE_ADDRESS_KITTY_HAWK + id)
+
+def open_kitty_hawk_todo(ticket_id, driver):
+    driver.get(BASE_ADDRESS_KITTY_HAWK + ticket_id)
     time.sleep(40)
 
-def open_automation_todo(id, driver):
-    driver.get(BASE_ADDRESS_KITTY_HAWK + id + TODOS)
+
+def open_automation_todo(ticket_id, driver):
+    driver.get(BASE_ADDRESS_KITTY_HAWK + ticket_id + TODOS)
     time.sleep(40)
+
 
 def get_name_suggestion(driver):
     row = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//tr[@class='base-edit-correction']"))
+        EC.presence_of_element_located(
+            (By.XPATH, "//tr[@class='base-edit-correction']")
         )
+    )
     data_copyable = row.find_element(By.XPATH, ".//div[@data-copyable]")
-    already_correct_suggestion = data_copyable.find_element(By.XPATH, ".//span").text    
-    cleaned_suggestion = already_correct_suggestion.strip() 
+    already_correct_suggestion = data_copyable.find_element(By.XPATH, ".//span").text
+    cleaned_suggestion = already_correct_suggestion.strip()
     return cleaned_suggestion
 
-def write_suggestions_to_csv(id, name, address, phone, file_path=output):
-    df = pd.DataFrame([[id, name, address, phone]])
-    df.to_csv(file_path, mode='a', header=False, index=False)
-    
+
+
 def get_address_suggestion(driver):
     address_element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//div[@class='ndm-address_address-line']"))
+        EC.presence_of_element_located(
+            (By.XPATH, "//div[@class='ndm-address_address-line']")
+        )
     )
     address = address_element.find_element(By.XPATH, ".//span").text
     cleaned_address = address.strip()
     return cleaned_address
 
+
 def get_phone_in_poi(driver):
-    """ Scraped phone number from the POI """
+    """Scraped phone number from the POI"""
     phone_element = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((
-            By.XPATH, "//div[@title='Number']"
-        ))
+        EC.visibility_of_element_located((By.XPATH, "//div[@title='Number']"))
     )
-    copyable = phone_element.find_element(By.XPATH, "following-sibling::div//div[@data-copyable]")
+    copyable = phone_element.find_element(
+        By.XPATH, "following-sibling::div//div[@data-copyable]"
+    )
     return copyable.text.strip()
 
-def get_phone_suggestion(driver):
-    # TODO (Elvis): Scrape suggested phone number from the web page using driver
-    pass
+
+def get_phone_suggested(driver):
+    """ " Scraping suggested phone number"""
+    suggested_phone_element = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located(
+            (
+                By.XPATH,
+                "(//div[@title='Number']/following-sibling::div//div[@data-copyable])[2]",
+            )
+        )
+    )
+    return suggested_phone_element.text.strip()
+
 
 def get_url_in_poi(driver):
-    # TODO (Elvis): Scrape URL from the POI section of the web page using driver
-    pass
+    """ Returns URL from POI """
+    try:
+        url_el = WebDriverWait(driver, 5).until(EC.presence_of_element_located((
+            By.XPATH,
+            "(//div[contains(@class,'col-value')]//a[@data-copyable])[1]"
+        )))
+        return url_el.get_attribute("href").strip()
+    except TimeoutException:
+        return None
 
-def get_url_suggestion(driver):
-    # TODO (Elvis): Scrape suggested URL from the web page using driver
-    pass
+
+def get_url_suggested(driver):
+    """ Returns suggested URL """
+    try:
+        url_el = driver.find_element(
+            By.XPATH,
+            "(//div[contains(@class,'col-value')]//a[@data-copyable])[2]"
+        )
+        return url_el.get_attribute("href").strip()
+    except Exception:
+        return None
+
+
+def write_ticket_to_csv(ticket_id, name, address, phone, file_path=output):
+    df = pd.DataFrame(
+        [[ticket_id, name, address, phone]],
+        columns=["Ticket ID","Name","Address","Phone"]
+    )
+    df.to_csv(
+        file_path,
+        mode='a',
+        header=not os.path.exists(file_path),
+        index=False
+    )
 
 
 def main():
     driver = setup_driver()
-    df = pd.read_csv('data.csv')
+    df = pd.read_csv("data.csv")
     df.columns = df.columns.str.strip()
-    
+
     for x in range(len(df)):
-        id = df['Ticket ID'].iloc[x]
-        if "automation" in id:
-            print(f"Automation found in: {id}")
-            open_automation_todo(id, driver)
+        ticket_id = df["Ticket ID"].iloc[x]
+        if "automation" in ticket_id:
+            print(f"Automation found in: {ticket_id}")
+            open_automation_todo(ticket_id, driver)
             name_suggestion = get_name_suggestion(driver)
             address = get_address_suggestion(driver)
-            phone_suggestion = get_phone_in_poi(driver)
-            write_suggestions_to_csv(id, address, name_suggestion, phone_suggestion)
-            print (id, phone_suggestion, name_suggestion, address)
+            phone = get_phone_in_poi(driver)
+            phone_suggested = get_phone_suggested(driver)
+            url = get_url_in_poi(driver)
+            url_suggested = get_url_suggested(driver)
+            write_ticket_to_csv(
+                ticket_id, name_suggestion, address, phone, phone_suggested, url, url_suggested
+            )
+            print(ticket_id)
+            print(phone)
+            print(phone_suggested)
+            print(name_suggestion)
+            print(address)
+            print(url)
+            print(url_suggested)
 
         else:
-            print(f"No automation in: {id}")
-            open_kitty_hawk_todo(id, driver)
+            print(f"No automation in: {ticket_id}")
+            open_kitty_hawk_todo(ticket_id, driver)
             name_suggestion = get_name_suggestion(driver)
             address = get_address_suggestion(driver)
-            phone_suggestion = get_phone_in_poi(driver)
-            write_suggestions_to_csv(id, address, name_suggestion, phone_suggestion)
-            print (id, phone_suggestion, name_suggestion, address)
+            phone = get_phone_in_poi(driver)
+            phone_suggested = get_phone_suggested(driver)
+            url = get_url_in_poi(driver)
+            url_suggested = get_url_suggested(driver)
+            write_ticket_to_csv(
+                ticket_id, name_suggestion, address , phone, phone_suggested, url, url_suggested
+            )
+            print(ticket_id)
+            print(phone)
+            print(phone_suggested)
+            print(name_suggestion)
+            print(address)
+            print(url)
+            print(url_suggested)
+
 
     driver.quit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 
 
 """
+def main():
+    driver = setup_driver()
+    
+    df = pd.read_csv('data.csv')
+    df.columns = df.columns.str.strip()  # ðŸ§¼ Clean up column names
 
+    for x in range(len(df)):
+       ticket_id = df['Ticket ID'].iloc[x]
+        
+        print(f"Ticket ID: {id}")
+        print(f"Ticket Link: {BASE_ADDRESS_KITTY_HAWK + ticket_id}")
+        open_kitty_hawk_todo(id, driver)
+        closure_in_poi = get_closure_in_poi(driver)
+        print(f"Closure in the POI: {closure_in_poi}")
+        name_suggestion = get_name_suggestion(driver)
+        print("")
+        print(f"Customer suggestion Name: {name_suggestion}")
+        address = get_address_suggestion(driver)
+        print("")
+        print(f"Customer suggestion Address: {address}")
+        country_code = get_country_code(driver)
+        address_in_poi = get_address_in_poi(driver)
+        print(f"Address in the POI: {address_in_poi}")
+        print("")
+        print(f"Country Code: {country_code}")
+        print("")
+        geocode_suggestion = get_geocode_suggestion(driver)
+        print(f"Customer suggestion Geocode: {geocode_suggestion}")
+        # geocode_in_poi = get_geocode_in_poi(driver)
+        # print(f"Geocode in POI: {geocode_in_poi}")
+        print("")
+        write_ticket_to_csv(id,name_suggestion,address,country_code)
+        
+    driver.quit()
 
-
-# William
-def get_address_in_poi(driver):
-    # TODO (William): Scrape address from the POI section of the web page using driver
-    pass
-
-def get_closure_in_poi(driver):
-    # TODO (William): Scrape closure status from the POI section of the web page using driver
-    pass
-
-def get_closure_suggestion(driver):
-    # TODO (William): Scrape suggested closure status from the web page using driver
-    pass
-
-def get_country_code(driver):
-    # TODO (William): Scrape country code from the web page or metadata using driver
-    pass
-
-def get_geocode_in_poi(driver):
-    # TODO (William): Scrape geocode from the POI section of the web page using driver
-    pass
-
-
-
-# Alex
-def get_geocode_suggestion(driver):
-    # TODO (Alex): Scrape suggested geocode (lat/lng) from the web page using driver
-    pass
-
-def get_hour_in_poi(driver):
-    # TODO (Alex): Scrape business hours from the POI section of the web page using driver
-    pass
-
-def get_hour_suggestion(driver):
-    # TODO (Alex): Scrape suggested business hours from the web page using driver
-    pass
-
-def get_modern_category_in_poi(driver):
-    # TODO (Alex): Scrape modern category from the POI section of the web page using driver
-    pass
-
-def get_modern_category_suggestion(driver):
-    # TODO (Alex): Scrape suggested modern category from the web page using driver
-    pass
-
-def get_name_in_poi(driver):
-    # TODO (Alex): Scrape name from the POI section of the web page using driver
-    pass
-
-
+if __name__ == '__main__':
+    main()
 """
