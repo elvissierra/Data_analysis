@@ -1,4 +1,4 @@
-Analysis project name,Test run of scraper using csv file formatted like the old one,,,,,,,,,,,,,,,,,,,,,,
+Analysis project name,MUID testing with carto score,,,,,,,,,,,,,,,,,,,,,,
 Tab (if applicable),,,,,,,,,,,,,,,,,,,,,,,
 Quip spreadsheet link (after https://quip-apple.com/),,,,,,,,,,,,,,,,,,,,,,,
 Col to output data warnings (default after last provided),,,,,,,,,,,,,,,,,,,,,,,
@@ -10,9 +10,9 @@ Total runtime,,,,,,,,,,,,,,,,,,,,,,,
 For Version(s) with col format like this: [Version option]: [col] | [Version option]: [col]...",,,,,,,,,,,,,,,,,,,"Describe/provide function for data not directly scrapable (See Custom Logics tab for premades, any to be used provided as ""Function: _"" will show red and know inputs)",,,"Select IDs type and copy list (row #s also adjustable)
 Make sure Plain Text format before export!",Add any other inputs needed along with IDs (in as many cols needed from here)
 ToDo ticket page,0,col,Place Details tab,1,col,Versions tab,0,Version(s) with col,RAPs tab,0,col,Edits tab,0,col,Todos tab,0,col,,Custom logic,col,row,MUIDs,<col name>
-Work Stream,,,POI header name,1,,Version options,,Original | Last_fancy_edited | Before_last_fancy_edited | Last_edited | Before_last_edited | Last_closed | PS_before | PS_after | ALL,State,,,Creator,,,Title,,,,,,2,194027988558282854,
-QC Level,,,AOI,,,Version link,,,Problem Type,,,Date,,,Status,,,,,,3,194027988558282854,
-Customer Problem Type,,,Branch,,,Version header - date,,,Client,,,Date - created on,,,Details - ID,,,,,,4,,
+Work Stream,,,POI header name,,,Version options,,Original | Last_fancy_edited | Before_last_fancy_edited | Last_edited | Before_last_edited | Last_closed | PS_before | PS_after | ALL,State,,,Creator,,,Title,,,,,,2,105176203,
+QC Level,,,AOI,,,Version link,,,Problem Type,,,Date,,,Status,,,,,,3,202365876,
+Customer Problem Type,,,Branch,,,Version header - date,,,Client,,,Date - created on,,,Details - ID,,,,,,4,109276759,
 POI header name,,,Place ID,,,Version header - name,,,ID,,,Branch,,,Details - Status,,,,,,5,,
 Carto Score,,,MUID,,,Version header - note,,,Assignee,,,Description - notes,,,Details - Title,,,,,,6,,
 Attribute Icon - Significant,,,Encrypted MUID,,,Version,,,Created - date,,,Description - edit - status,,,Details - Ticket - ID,,,,,,7,,
@@ -20,7 +20,7 @@ Attribute Icon - Inside a Venue,,,Created,,,Feature Version,,,Created - name,,,D
 Attribute Icon - Claimed,,,Updated,,,Created,,,Completed - date,,,Description - edit - View link,,,Details - Ticket - PM2 link,,,,,,9,,
 Attribute Icon - Reopened,,,Last Edited,,,Popularity,,,Completed - name,,,Description - edit - View - header,,,Details - Ticket - Bluegrass link,,,,,,10,,
 Attribute Icon - Plasma AOI Ticket Filed,,,Popularity,,,Supercluster,,,Completed - Review link,,,Description - edit - View - JSON,,,Details - Categorization,,,,,,11,,
-Attribute Icon - Coarse Location,,,Carto Score,,,Vendor Contributions - Name,,,View link,,,,,,Details - Age,,,,,,12,,
+Attribute Icon - Coarse Location,,,Carto Score,1,,Vendor Contributions - Name,,,View link,,,,,,Details - Age,,,,,,12,,
 Attribute Icon - Recently Edited,,,HTT Score,,,Vendor Contributions - Vendor Place ID,,,Edit link,,,,,,Details - Corrections - name,,,,,,13,,
 Source,,,Head/Torso/Tail,,,Vendor Contributions - Vendor,,,,,,,,,Details - Corrections - suggestion,,,,,,14,,
 Attached POI link,,,Country Percentile,,,Vendor Contributions - Vendor Internal ID,,,,,,,,,Details - JSON - edits,,,,,,15,,

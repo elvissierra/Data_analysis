@@ -1,44 +1,37 @@
-# Directory structure for the modularized Selenium-based POI validator
-
-project_root/
-├── core/
-│   ├── __init__.py
-│   ├── main.py              # Entry point
-│   ├── runner.py            # Orchestrates flow: load config, scrape, validate, output
-│   └── state_manager.py     # Manages versioning, history, run state
+Analysis_Automation_Project/
+├── run.py                          # Main script to execute the scraper
+├── README.md                       # Project overview and setup guide
+├── requirements.txt                # Python package dependencies
+├── scaffold.md                     # Project planning scaffold (optional)
 │
-├── io/
-│   ├── __init__.py
-│   ├── config_loader.py     # Parses input config CSV
-│   ├── output_writer.py     # Writes result CSVs and logs
-│   └── db_writer.py         # Optional: push to internal database (stub for now)
+├── core/
+│   ├── main.py                     # Entrypoint logic
+│   └── runner.py                   # Orchestration and main application loop
+│
+├── Input_Config/
+│   ├── config.csv                  # Primary Quip-exported spreadsheet
+│   └── config copy - Template.csv  # Field selection template for reuse
+│
+├── input_output/
+│   ├── config_loader.py            # Reads config and extracts scrape targets
+│   └── output_writer.py            # Saves results to CSV
+│
+├── Output_Data/
+│   └── results.csv                 # Final scraped data output
 │
 ├── scraper/
-│   ├── __init__.py
-│   ├── browser.py           # Starts driver, handles session/login
-│   ├── navigation.py        # Navigates dashboard, ticket tabs
-│   ├── extractors.py        # Pulls POI and ToDo data from page
-│   ├── selectors.py         # Central reference for all CSS/XPath selectors
-│   └── actions.py           # For submit/comment/button actions (unused in dry run)
+│   ├── browser_manager.py          # Manages SafariDriver session
+│   ├── extractor.py                # Scrape dispatcher
+│   ├── extractor_helpers.py        # Routes to ticket/POI logic
+│   ├── tab_nav.py                  # Navigates between POI tabs
+│   └── tab_ticket_scrapers/
+│       ├── ticket_page.py          # Scrapes raw correction fields from tickets
+│       ├── gemini_tab.py           # Placeholder for Gemini tab fields
+│       ├── edits_tab.py            # Placeholder
+│       ├── raps_tab.py             # Placeholder
+│       ├── todos_tab.py            # Placeholder
+│       └── versions_tab.py         # Placeholder
 │
-├── validator/
-│   ├── __init__.py
-│   ├── ticket_checks.py     # todo_check, edits_check, etc.
-│   ├── field_checks.py      # name, phone, hours comparison logic
-│   ├── normalizer.py        # hours formatting, phone cleanup
-│   └── fuzzy_utils.py       # Wraps RapidFuzz or FuzzyWuzzy
-│
-├── utils/
-│   ├── __init__.py
-│   ├── formatting.py        # Log alignment, string helpers
-│   ├── exceptions.py        # Custom error types
-│   ├── timing.py            # Execution timing, sleep helpers
-│   └── settings.py          # Config flags, thresholds, selectors
-│
-├── tests/
-│   └── test_sample.py       # Unit tests and integration tests
-│
-├── config.csv               # Input file for non-technical users
-├── results.csv              # Output written by script
-├── README.md                # Usage and setup instructions
-└── requirements.txt         # pip dependencies
+├── tests/                          # (For unit or integration tests (TBD))
+├── utils/                          # Future helper libraries/utilities
+└── validator/                      # Validation or postprocessing modules (TBD)

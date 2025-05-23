@@ -1,3 +1,4 @@
-selenium==4.32.0
-pandas==2.2.3
 black==25.1.0
+geopy==2.4.1
+pandas==2.2.3
+selenium==4.32.0

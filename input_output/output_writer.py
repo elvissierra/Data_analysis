@@ -40,13 +40,13 @@ import csv
     except Exception as e:
         print(f"Failed to write results: {e}")"""
 
-# Above is an attempt to format the results into a csv template that mirrors the formatting
-# of the input template csv. Need to reexamine exactly how the data is shaped because I think
-# I'm underestimating the complexity here. Below will just fill a blank CSV
-
+"""
+Above is an attempt to format the results into a csv template that mirrors the formatting
+of the input template csv. Need to reexamine exactly how the data is shaped because I think
+I'm underestimating the complexity here. Below will just fill a blank CSV -AH 
+"""
 
 import csv
-
 
 def write_results(filepath, data):
     if not data:
