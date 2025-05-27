@@ -1,8 +1,9 @@
-# browser_manager.py
+import logging
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+
 
 def start_driver():
     print("Launching Chrome browser…")
@@ -16,12 +17,12 @@ def start_driver():
         "bnmgcoghgdbfcnokmmjbabgjphmfnmgl/1.2.0_0"
     )
 
-    # let webdriver_manager download (if needed) & return the correct binary path
-    service = Service(ChromeDriverManager().install())
+    driver_path = ChromeDriverManager().install()
+    service = Service(driver_path, log_path="/dev/null")
 
     try:
         driver = webdriver.Chrome(service=service, options=chrome_options)
         return driver
     except Exception as e:
-        print(f"Failed to launch Chrome: {e}")
+        logging.error("Failed to launch ChromeDriver: %s", e)
         return None
