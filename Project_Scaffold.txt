@@ -20,7 +20,7 @@ Analysis_Automation_Project/
 │   └── results.csv                 # Final scraped data output
 │
 ├── scraper/
-│   ├── browser_manager.py          # Manages SafariDriver session
+│   ├── browser_manager.py          # Manages ChromeDriver session
 │   ├── extractor.py                # Scrape dispatcher
 │   ├── extractor_helpers.py        # Routes to ticket/POI logic
 │   ├── tab_nav.py                  # Navigates between POI tabs
